@@ -75,7 +75,7 @@ Format:
 """
 
             try:
-                model = genai.GenerativeModel("gemini-2.5-flash-preview-04-17")
+                model = genai.GenerativeModel("models/gemini-2.0-flash")
 
                 if photo:
                     image = Image.open(photo)
