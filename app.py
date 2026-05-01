@@ -11,7 +11,10 @@ st.subheader("AI-powered social media captions for your food business")
 st.markdown("---")
 
 # API Key from Streamlit secrets
-genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+import os
+api_key = st.secrets["GEMINI_API_KEY"]
+st.write(f"Key starts with: {api_key[:8]}...")  # temporary debug line
+genai.configure(api_key=api_key)
 
 # --- FORM ---
 st.markdown("### Tell us about your product")
