@@ -1,6 +1,8 @@
 import streamlit as st
-import google.generativeai as genai
+from groq import Groq
 from PIL import Image
+import base64
+import io
 
 # Page config
 st.set_page_config(page_title="CaptionChef 🍳", page_icon="🍳", layout="centered")
@@ -10,8 +12,8 @@ st.title("🍳 CaptionChef")
 st.subheader("AI-powered social media captions for your food business")
 st.markdown("---")
 
-# API Key from Streamlit secrets
-genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+# Groq client
+client = Groq(api_key=st.secrets["GROQ_API_KEY"])
 
 # --- FORM ---
 st.markdown("### Tell us about your product")
@@ -46,7 +48,6 @@ if st.button("🍳 Generate Captions"):
     else:
         with st.spinner("CaptionChef is cooking... 🍳"):
 
-            # Build prompt
             prompt = f"""
 You are CaptionChef, an expert social media copywriter for small food businesses and home bakers in India.
 
@@ -75,18 +76,16 @@ Format:
 """
 
             try:
-                model = genai.GenerativeModel("models/gemini-2.0-flash")
+                response = client.chat.completions.create(
+                    model="llama3-8b-8192",
+                    messages=[{"role": "user", "content": prompt}],
+                    max_tokens=1000
+                )
 
-                if photo:
-                    image = Image.open(photo)
-                    response = model.generate_content([prompt, image])
-                else:
-                    response = model.generate_content(prompt)
+                result = response.choices[0].message.content
 
                 st.markdown("## ✨ Your Captions Are Ready!")
-                st.markdown(response.text)
-
-                # Copy hint
+                st.markdown(result)
                 st.info("💡 Tip: Click on any caption, select all and copy to use it directly!")
 
             except Exception as e:
