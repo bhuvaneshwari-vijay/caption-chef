@@ -120,10 +120,44 @@ Format your response EXACTLY like this for each platform:
                 st.markdown("*Click inside any box, select all (Ctrl+A) and copy!*")
                 st.markdown("---")
 
-                # Parse and display each platform caption in a styled card
                 sections = result.split("**")
                 sections = [s.strip() for s in sections if s.strip()]
 
                 i = 0
                 while i < len(sections) - 1:
-                    platform = sections[i].strip().rstrip("*").
+                    platform = sections[i].strip().rstrip("*").strip()
+                    caption = sections[i + 1].strip()
+
+                    st.markdown(f"""
+                        <div class="caption-card">
+                            <div class="platform-title">📱 {platform}</div>
+                        </div>
+                    """, unsafe_allow_html=True)
+
+                    st.text_area(
+                        label=f"Copy your {platform} caption:",
+                        value=caption,
+                        height=150,
+                        key=f"caption_{i}"
+                    )
+                    i += 2
+
+                st.markdown("---")
+
+                st.markdown("## #️⃣ Bonus Hashtags for Instagram")
+                with st.spinner("Generating hashtags..."):
+                    hashtag_prompt = f"""
+Generate 15 relevant Instagram hashtags for a food business post about: {product_name} - {description}
+Focus on Indian food business, home bakers, and local community hashtags.
+Return ONLY the hashtags in one line, separated by spaces. No explanation, no numbering.
+"""
+                    hashtag_response = client.chat.completions.create(
+                        model="llama-3.3-70b-versatile",
+                        messages=[{"role": "user", "content": hashtag_prompt}],
+                        max_tokens=200
+                    )
+                    hashtags = hashtag_response.choices[0].message.content.strip()
+                    st.text_area("Copy these hashtags:", value=hashtags, height=100, key="hashtags")
+
+            except Exception as e:
+                st.error(f"Something went wrong: {e}")
