@@ -85,8 +85,19 @@ Format:
                 result = response.choices[0].message.content
 
                 st.markdown("## ✨ Your Captions Are Ready!")
-                st.markdown(result)
-                st.info("💡 Tip: Click on any caption, select all and copy to use it directly!")
+
+# Split captions by platform and show copy buttons
+sections = result.split("**")
+sections = [s.strip() for s in sections if s.strip()]
+
+i = 0
+while i < len(sections) - 1:
+    platform = sections[i]
+    caption = sections[i + 1].strip()
+    
+    st.markdown(f"### 📱 {platform}")
+    st.text_area(f"Caption for {platform}", caption, height=150, key=f"caption_{i}")
+    i += 2
 
             except Exception as e:
                 st.error(f"Something went wrong: {e}")
